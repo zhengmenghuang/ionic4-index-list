@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar placeholder="请输入关键字查询" autocomplete="on" [(ngModel)]="key"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!--底部的总数 只有当索引个数发生改变时 才会重新渲染-->
+  <ion-index-list [hasTop]="true" [hasSum]="true">
+    <div top>
+      <ion-item lines="none">
+        <ion-label>
+          页面其他元素放这里
+        </ion-label>
+      </ion-item>
+    </div>
+
+
+    <div *ngFor="let group of contactGroup">
+      <ion-index-section [index]="group.Spell" *ngIf="(group.Data | filter:key).length > 0">
+        <ion-index-cell *ngFor="let item of group.Data | filter:key; last as last">
+
+          <!--这里自定义需要显示的内容-->
+          <ion-item style="width: 100%" [lines]="last ? 'none' : 'inset'">
+            <ion-label>
+              <h2>{{item}}</h2>
+            </ion-label>
+          </ion-item>
+
+        </ion-index-cell>
+      </ion-index-section>
+    </div>
+
+  </ion-index-list>
+</ion-content>
