@@ -8,8 +8,8 @@ import {IndexSectionComponent} from './index-section';
 @Component({
   selector: 'ion-index-list',
   template: `
-    <div class="index-list scrollContent">
-      <div class="index-list-wrapper scrollContent" #scrollContent tappable (scroll)="onScroll($event)">
+    <div class="index-list">
+      <div class="index-list-wrapper" #scrollContent tappable (scroll)="onScroll($event)">
         <ng-content select="[top]"></ng-content>
         <ng-content></ng-content>
         <ng-content select="[bottom]"></ng-content>
@@ -44,6 +44,7 @@ import {IndexSectionComponent} from './index-section';
 
     .index-list-wrapper {
       width: 100%;
+      height: 100%;
       overflow-y: scroll;
       -webkit-overflow-scrolling: touch;
     }
