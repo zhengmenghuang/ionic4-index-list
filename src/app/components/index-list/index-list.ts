@@ -38,11 +38,8 @@ import {IndexSectionComponent} from './index-section';
 
     .index-list {
       width: 100%;
-      display: flex;
-      justify-content: space-between;
       height: 100%;
       overflow: hidden;
-      transform: translate(0, 0);
     }
 
     .index-list-wrapper {
