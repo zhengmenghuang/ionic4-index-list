@@ -114,9 +114,10 @@ export class IndexListComponent implements AfterViewChecked {
   _indexes: Array<string> = []; // 右侧导航
   _offsetTops: Array<number> = []; // 每个IndexSection 的offsetTop
   _navOffsetX = 0; // 点击时字母栏距离顶部的距离
-  _indicatorTime: any = null; // 函数节流
+  _indicatorTime: any = null; // 函数节流 定期执行
   _showModal = false; // 弹层是否激活
   _sumContact = 0; // 总共联系人的数量
+  _sumTime: any; // 函数节流 定期执行 减少总数sumContact的计算
 
 
   @Input() hasTop = false;
@@ -132,31 +133,44 @@ export class IndexListComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    /*当列表变更后 更新字母表*/
-    const newSum = this._listOfIndexSection['_results'].reduce((sum, item) => [...sum, ...item._listOfIndexCell['_results']], []).length;
-    if (newSum !== this._sumContact && this._listOfIndexSection) {
-      setTimeout(() => {
-        // 重置基本信息
-        this._sumContact = newSum;
-        this._indexes = [];
-        this._offsetTops = [];
-        this._navOffsetX = 0;
+    // 函数防抖
+    if (!this._sumTime) {
+      // 在这个钩子里 要异步执行代码
+      this._sumTime = setTimeout(() => {
+        this._sumTime = null;
 
-        // 赋值字母索引
-        this._listOfIndexSection.forEach((section) => {
-          this._indexes.push(section.index);
-          this._offsetTops.push(section.getElementRef().nativeElement.offsetTop);
-        });
+        // 当列表变更后 更新字母表
+        const newSum = this._listOfIndexSection['_results'].reduce((sum, item) => [...sum, ...item._listOfIndexCell['_results']], []).length;
+        if (newSum !== this._sumContact && this._listOfIndexSection) {
+          console.log(newSum, this._sumContact);
+          // 二次过滤 因为ngAfterViewChecked这个钩子变更检测太快了 所以当执行人任务的时候 已经过来好几条了
+          // 重置基本信息
+          this._sumContact = newSum;
+          this._indexes = [];
+          this._offsetTops = [];
+          this._navOffsetX = 0;
 
-        // 判断是否需要显示到顶的箭头
-        if (this.hasTop) {
-          this._indexes.unshift('↑');
-          this._offsetTops.unshift(0);
-          this._currentIndicator = '↑';
-        } else {
-          if (this._indexes.length) { this._currentIndicator = this._indexes[0]; }
+          // 赋值字母索引
+          this._listOfIndexSection.forEach((section) => {
+            this._indexes.push(section.index);
+            this._offsetTops.push(section.getElementRef().nativeElement.offsetTop);
+          });
+
+          // 判断是否需要显示到顶的箭头
+          if (this.hasTop) {
+            this._indexes.unshift('↑');
+            this._offsetTops.unshift(0);
+            this._currentIndicator = '↑';
+          } else {
+            if (this._indexes.length) { this._currentIndicator = this._indexes[0]; }
+          }
+
+          // 判断是否需要显示联系人总数
+          if (this.hasSum) {
+            this._sumContact = this._listOfIndexSection['_results'].reduce((sum, item) => sum + item._listOfIndexCell.length, 0);
+          }
         }
-      }, 0);
+      }, 300);
     }
   }
 
