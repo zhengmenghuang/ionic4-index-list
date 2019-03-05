@@ -142,8 +142,6 @@ export class IndexListComponent implements AfterViewChecked {
         // 当列表变更后 更新字母表
         const newSum = this._listOfIndexSection['_results'].reduce((sum, item) => [...sum, ...item._listOfIndexCell['_results']], []).length;
         if (newSum !== this._sumContact && this._listOfIndexSection) {
-          console.log(newSum, this._sumContact);
-          // 二次过滤 因为ngAfterViewChecked这个钩子变更检测太快了 所以当执行人任务的时候 已经过来好几条了
           // 重置基本信息
           this._sumContact = newSum;
           this._indexes = [];
